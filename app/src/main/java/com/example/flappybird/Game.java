@@ -1,6 +1,7 @@
 package com.example.flappybird;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,13 +28,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     private SurfaceHolder mSurfaceHolder;
     private Canvas mCanvas;
     private Bitmap background;
-    private boolean mIsDrawing;
+    public static boolean mIsDrawing;
     private int FPS = 30;
     private Pipe mPipe1,mPipe2,mPipe3,mPipe4,mPipe5,mPipe6;
     private int screenHeight;
     private int screenWidth;
     private int gap = 600;
     private int birdSize = 100;
+    private  Thread t;
 
     //public static Button startButton;
 
@@ -47,6 +50,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
     }
 
+    public Game(Context context){
+        super(context);
+        init();
+
+    }
 
 
 
@@ -135,6 +143,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
 
         }
+
+
     }
 
     @Override
@@ -173,11 +183,17 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         for (int i = 0; i < pipes.size(); i++) {
 
             if (mBird.posY < pipes.get(i).posY + (screenHeight / 2) - (gap / 2)  ) {
-                if( mBird.posX + birdSize > pipes.get(i).posX && mBird.posX < pipes.get(i).posX + 100)
-                    reset();
+                if( mBird.posX + birdSize > pipes.get(i).posX && mBird.posX < pipes.get(i).posX + 100){
+                    mIsDrawing = false;
+                    end();
+                }
+
             } else if (mBird.posY+ birdSize > (screenHeight / 3) + (gap / 2) + pipes.get(i).posY- 100 ) {
-                if( mBird.posX + birdSize > pipes.get(i).posX && mBird.posX < pipes.get(i).posX + 100)
-                    reset();
+                if( mBird.posX + birdSize > pipes.get(i).posX && mBird.posX < pipes.get(i).posX + 100){
+                    mIsDrawing = false;
+                    end();
+                }
+
             }
 
 
@@ -196,12 +212,18 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     }
 
 
-    public void reset(){
+    public void end(){
         /*start = false;
         startButton.setText("restart");
         startButton.setVisibility(View.VISIBLE);*/
 
+        Log.d("?????","finish really?");
+        Intent intent = new Intent("kill");
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+        Log.d("?????","finish really?");
 
+
+        /*
         mBird.posY = 100;
 
         mPipe1.posX = 1500;
@@ -215,7 +237,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
         mPipe4.posX = 3000;
         mPipe4.posY= 50;
-
+        */
         //mPipe5.posX = 2000;
         //mPipe5.posY = 150;
 
