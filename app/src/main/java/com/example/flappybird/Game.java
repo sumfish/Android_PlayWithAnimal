@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AttributeSet;
@@ -18,6 +19,8 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +39,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     private int gap = 600;
     private int birdSize = 100;
     private  Thread t;
+    private Movie movie;
 
     //public static Button startButton;
 
@@ -99,6 +103,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
                //mCanvas.drawRGB(0, 100, 205);
                mCanvas.drawBitmap(background,0f,0f,null);
                update();
+               //movie.draw(mCanvas,0,0);
                mBird.draw(mCanvas);
                mPipe1.draw(mCanvas);
                mPipe2.draw(mCanvas);
@@ -146,7 +151,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
 
     }
-
+/*
     @Override
     public boolean onTouchEvent(MotionEvent event){
         if(start) {
@@ -158,6 +163,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         }
         return super.onTouchEvent(event);
     }
+*/
+    public void fly(){
+        if (mBird.posY > -25)
+            mBird.posY -= mBird.velocityY * 10;
+
+
+    }
+
 
 
     public void update() {
@@ -245,6 +258,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         //mPipe6.posY = 250;
     }
 
+    public void setGif(){
+
+
+    }
+
+
     public Bitmap getResizedBitmap(Bitmap b, int newWidth, int newHeight) {
         int width = b.getWidth();
         int height = b.getHeight();
@@ -262,6 +281,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         b.recycle();
         return resizedBitmap;
     }
+
+
+
+
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {

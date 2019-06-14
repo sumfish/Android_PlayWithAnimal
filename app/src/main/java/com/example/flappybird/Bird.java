@@ -2,12 +2,17 @@ package com.example.flappybird;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Movie;
+
+import java.io.InputStream;
 
 public class Bird {
 
     public int posX,posY;
     private Bitmap image;
     public int velocityY = 5;
+
+
 
     public Bird (Bitmap b) {
 
@@ -25,4 +30,6 @@ public class Bird {
 
         posY += velocityY;
     }
+
+
 }
