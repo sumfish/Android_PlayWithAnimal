@@ -18,6 +18,7 @@
             android:id="@+id/button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:enabled="false"
             android:onClick="startGame"
             android:text="@string/start" />
     </LinearLayout>
