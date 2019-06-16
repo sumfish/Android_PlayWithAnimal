@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Movie;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AttributeSet;
@@ -31,6 +32,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     private SurfaceHolder mSurfaceHolder;
     private Canvas mCanvas;
     private Bitmap background;
+    private ArrayList<Bitmap> birdArray;
     public static boolean mIsDrawing;
     private int FPS = 30;
     private Pipe mPipe1,mPipe2,mPipe3,mPipe4,mPipe5,mPipe6;
@@ -39,9 +41,20 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     private int gap = 600;
     private int birdSize = 100;
     private  Thread t;
-    private Movie movie;
+    private int G =1;
+    private boolean isFlying = false;
+    private int counterG;
+    private int counterF;
+    private boolean isStrong = false;
+    private boolean[] scoreArr ;
+    private int score = 0;
+    private int randomEmoji;
+    private boolean isEmojing = false;
+    private boolean bindToPipe = false;
+    private Emoji mEmoji;
+    private int emojiSize = 150;
+    private int face = 0;
 
-    //public static Button startButton;
 
     public static boolean start = false;
 
@@ -68,28 +81,57 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         Bitmap  originB = BitmapFactory.decodeResource(res, R.drawable.flyingbird);
         Bitmap newB = getResizedBitmap(originB,birdSize,birdSize);
 
-        Bitmap up = getResizedBitmap(BitmapFactory.decodeResource
-                (getResources(), R.drawable.pipe_up), 100, Resources.getSystem().getDisplayMetrics().heightPixels / 2);
+        Bitmap up = getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pipe_up), 100, Resources.getSystem().getDisplayMetrics().heightPixels / 2);
 
-        Bitmap down = getResizedBitmap(BitmapFactory.decodeResource
-                (getResources(), R.drawable.pipe_down), 100, Resources.getSystem().getDisplayMetrics().heightPixels / 2);
-        ;
-        mBird = new Bird(newB);
+        Bitmap down = getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pipe_down), 100, Resources.getSystem().getDisplayMetrics().heightPixels / 2);
+
+        Bitmap smile = getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.smile),emojiSize,emojiSize);
+        Bitmap sad = getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.sad),emojiSize,emojiSize);
+
+
+        //mBird = new Bird(newB);
+        initGif();
+        mBird = new Bird(birdArray);
         mPipe1 = new Pipe(down,up,1500,100);
         mPipe2 = new Pipe(down,up,2200,0);
         mPipe3 = new Pipe(down,up,2900,200);
         mPipe4 = new Pipe(down,up,3600,50);
         //mPipe5 = new Pipe(down,up,3500,150);
         //mPipe6 = new Pipe(down,up,4000,250);
+        mEmoji = new Emoji(smile,sad,0,0);
 
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 
+        scoreArr = new boolean[4];
+        for(int i=0;i<scoreArr.length;i++)
+            scoreArr[i] = false;
+
+        Random r = new Random();
+        randomEmoji = 100 + r.nextInt(200);
 
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
         setFocusable(true);
+
+
+    }
+
+    public void initGif(){
+        Resources res = getResources();
+        birdArray = new ArrayList<Bitmap>();
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird1),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird2),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird3),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird4),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird5),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird6),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird7),birdSize,birdSize));
+        birdArray.add(getResizedBitmap(BitmapFactory.decodeResource(res, R.drawable.bird8),birdSize,birdSize));
+
+
+
 
     }
 
@@ -100,17 +142,26 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
             mCanvas = mSurfaceHolder.lockCanvas();
            if(mCanvas!=null) {
-               //mCanvas.drawRGB(0, 100, 205);
+
                mCanvas.drawBitmap(background,0f,0f,null);
                update();
-               //movie.draw(mCanvas,0,0);
+
                mBird.draw(mCanvas);
                mPipe1.draw(mCanvas);
                mPipe2.draw(mCanvas);
                mPipe3.draw(mCanvas);
                mPipe4.draw(mCanvas);
+               if(isEmojing)
+                   mEmoji.draw(mCanvas,face);
                //mPipe5.draw(mCanvas);
                //mPipe6.draw(mCanvas);
+
+               Paint paint=new Paint();
+               paint.setStyle(Paint.Style.FILL);
+               paint.setStrokeWidth(12);
+               paint.setTextSize(100);
+               mCanvas.drawText(Integer.toString(score),100,100,paint);
+
             }
 
         }catch (Exception e){
@@ -135,6 +186,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
             long start = System.currentTimeMillis();
 
             drawSomething();
+            randomEmoji--;
+            if(randomEmoji <= 0)
+                setEmoji();
 
             long end = System.currentTimeMillis();
 
@@ -151,23 +205,42 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
 
     }
-/*
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        if(start) {
-            if (mBird.posY > -25)
-                mBird.posY -= mBird.velocityY * 10;
-            String y = Integer.toString(mBird.posY);
-            Log.d("QQQQQQ", "touch");
-            Log.d("bird", y);
-        }
-        return super.onTouchEvent(event);
-    }
-*/
-    public void fly(){
-        if (mBird.posY > -25)
-            mBird.posY -= mBird.velocityY * 10;
 
+    public void fly(){
+       isFlying = true;
+       counterG = 0;
+       counterF = 0;
+
+    }
+
+    public void  flyAnimate(){
+
+        mBird.fly(counterG);
+
+        counterG++;
+
+        if(counterG == 10 || mBird.posY< 0)
+            isFlying = false;
+
+    }
+
+    public void fallAnimate(){
+        mBird.fall(counterF);
+        counterF++;
+
+    }
+
+    public void strongBird(){
+        Log.d("so","strong");
+
+    }
+
+    public void setEmoji(){
+        //isEmojing = true;
+        bindToPipe = true;
+        randomEmoji = 20000;
+        Random r = new Random();
+        face = r.nextInt()%2;
 
     }
 
@@ -176,24 +249,38 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     public void update() {
         if(start) {
             check();
-            mBird.fall();
+            if(isFlying)
+                flyAnimate();
+            else
+                fallAnimate();
             mPipe1.move();
             mPipe2.move();
             mPipe3.move();
             mPipe4.move();
+
+            if(isEmojing)
+                mEmoji.move();
+
             //mPipe5.move();
             //mPipe6.move();
+
+
         }
     }
 
     public void check(){
         List<Pipe> pipes = new ArrayList<>();
+
         pipes.add(mPipe1);
         pipes.add(mPipe2);
         pipes.add(mPipe3);
         pipes.add(mPipe4);
 
         for (int i = 0; i < pipes.size(); i++) {
+            if(mBird.posY + birdSize > screenHeight){
+                mIsDrawing = false;
+                end();
+            }
 
             if (mBird.posY < pipes.get(i).posY + (screenHeight / 2) - (gap / 2)  ) {
                 if( mBird.posX + birdSize > pipes.get(i).posX && mBird.posX < pipes.get(i).posX + 100){
@@ -210,6 +297,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
             }
 
 
+            if (pipes.get(i).posX - 10 < 0) {
+                if(scoreArr[i] == false) {
+                    score++;
+                    scoreArr[i] = true;
+                }
+            }
+
+
             if (pipes.get(i).posX + 100 < 0) {
                 Random r = new Random();
                 int value1 = r.nextInt(5)*100;
@@ -220,48 +315,53 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
                 else
                     pipes.get(i).posX =pipes.get(i-1).posX +value1 +500;
                 pipes.get(i).posY = value2;
+
+                if(bindToPipe == true){
+                    bindToPipe = false;
+                    isEmojing = true;
+                    mEmoji.posX = pipes.get(i).posX-30;
+                    mEmoji.posY = (screenHeight / 3) + (gap / 2) + pipes.get(i).posY -350;
+                }
+
+                scoreArr[i] = false;
+
+            }
+
+
+        }
+
+        if(isEmojing){
+            if (mBird.posY < mEmoji.posY + emojiSize && mBird.posY + birdSize > mEmoji.posY ) {
+                if (mBird.posX < mEmoji.posX + emojiSize && mBird.posX + birdSize > mEmoji.posX ) {
+                    strongBird();
+                    isEmojing = false;
+                    Random r = new Random();
+                    randomEmoji = 100 + r.nextInt(200);
+
+                }
+
+            }
+
+            if(mEmoji.posX + emojiSize <0){
+                isEmojing = false;
+                Random r = new Random();
+                randomEmoji = 100 + r.nextInt(200);
+
             }
         }
     }
 
 
     public void end(){
-        /*start = false;
-        startButton.setText("restart");
-        startButton.setVisibility(View.VISIBLE);*/
 
-        Log.d("?????","finish really?");
+        //Log.d("?????","finish really?");
         Intent intent = new Intent("kill");
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-        Log.d("?????","finish really?");
-
-
-        /*
-        mBird.posY = 100;
-
-        mPipe1.posX = 1500;
-        mPipe1.posY= 100;
-
-        mPipe2.posX = 2200;
-        mPipe2.posY = 0;
-
-        mPipe3.posX = 2600;
-        mPipe3.posY = 200;
-
-        mPipe4.posX = 3000;
-        mPipe4.posY= 50;
-        */
-        //mPipe5.posX = 2000;
-        //mPipe5.posY = 150;
-
-        //mPipe6.posX = 2500;
-        //mPipe6.posY = 250;
-    }
-
-    public void setGif(){
-
+        //Log.d("?????","finish really?");
 
     }
+
+
 
 
     public Bitmap getResizedBitmap(Bitmap b, int newWidth, int newHeight) {
@@ -269,16 +369,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         int height = b.getHeight();
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
+
 
         Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
         matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap =
-                Bitmap.createBitmap(b, 0, 0, width, height, matrix, false);
+        Bitmap resizedBitmap = Bitmap.createBitmap(b, 0, 0, width, height, matrix, false);
         b.recycle();
+
         return resizedBitmap;
     }
 

@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private  Button b;
+    private long mLastClickTime = 0;
+    public static final long TIME_INTERVAL = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,24 +28,25 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(new Game(this));
     }
 
-   public void startGame(View view){
+    public void startGame(View view){
         Game.start = true;
+        long nowTime = System.currentTimeMillis();
+        if (nowTime - mLastClickTime > TIME_INTERVAL) {
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, GameActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+            mLastClickTime = nowTime;
+        }
 
-        //b.setVisibility(View.INVISIBLE);
-        //setContentView(R.layout.activity_game);
-       Intent intent = new Intent();
-       intent.setClass(MainActivity.this, GameActivity.class);
-       intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-       startActivity(intent);
 
+    }
 
-   }
+    public void reset(){
 
-   public void reset(){
-
-       setContentView(R.layout.activity_main);
-       b.setVisibility(View.VISIBLE);
-   }
+        setContentView(R.layout.activity_main);
+        b.setVisibility(View.VISIBLE);
+    }
 
 
 }

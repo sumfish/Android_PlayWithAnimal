@@ -50,7 +50,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void killActivity() {
-        Log.d("?????","finish");
+        //Log.d("?????","finish");
         this.finish();
         overridePendingTransition(0,0);
     }
