@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +17,15 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioEvent;
+import be.tarsos.dsp.AudioProcessor;
+import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchDetectionResult;
+import be.tarsos.dsp.pitch.PitchProcessor;
 
 import com.example.flappybird.Face.CameraSource;
 import com.example.flappybird.Face.CameraSourcePreview;
@@ -35,6 +44,9 @@ public class GameActivity extends Activity {
 
     private FaceDetectionProcessor faceDetectionProcessor;
 
+    AudioDispatcher dispatcher;
+    AudioProcessor pitchProcessor;
+    PitchDetectionHandler pdh;
     private Game game;
 
     @Override
@@ -63,32 +75,111 @@ public class GameActivity extends Activity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(new MessageHandler(), new IntentFilter("kill"));
 
-        game.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        game.fly();
-
-                        break;
-
-                    case MotionEvent.ACTION_UP:
+        final float pitchThre=getIntent().getFloatExtra("PITCH",0);
+        Log.d("pitch",new Float(pitchThre).toString());
+        getLevel(pitchThre);
 
 
-                        break;
-
-                    default:
-                        break;
-                }
-
-                return true;
-            }
-        });
     }
 
+    public void getLevel(final float averge){
+
+
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        pdh = new PitchDetectionHandler() {
+            @Override
+            public void handlePitch(PitchDetectionResult result,AudioEvent e) {
+                final float pitchInHz = result.getPitch();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("nowpitch", new Float(pitchInHz).toString());
+
+                        if (game.mIsDrawing){
+
+                            game.mCanvas = null;
+                            long start = System.currentTimeMillis();
+                            game.drawSomething();
+                            game.randomEmoji--;
+                            if(game.randomEmoji <= 0)
+                                game.setEmoji();
+
+                            long end = System.currentTimeMillis();
+
+                            if (end - start < 30) {
+                                try {
+                                    Thread.sleep(30 - (end - start));
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if(pitchInHz!=-1) {
+                                Log.d("nowpitch", new Float(pitchInHz).toString());
+                                if (Math.abs(pitchInHz - averge) < 50) {
+                                    if (pitchInHz > averge) {
+                                        //fly
+                                        game.fly(1);
+                                    } else {
+                                        game.fly(-1);
+                                    }
+                                } else if (Math.abs(pitchInHz - averge) < 100) {
+                                    if (pitchInHz > averge) {
+                                        game.fly(1.5);
+                                    } else {
+                                        game.fly(-1.5);
+                                    }
+                                } else if (Math.abs(pitchInHz - averge) < 150) {
+                                    if (pitchInHz > averge) {
+                                        game.fly(2);
+                                    } else {
+                                        game.fly(-2);
+                                    }
+                                }else if (Math.abs(pitchInHz - averge) < 200) {
+                                    if (pitchInHz > averge) {
+                                        game.fly(2.5);
+                                    } else {
+                                        game.fly(-2.5);
+                                    }
+                                } else {
+                                    if (pitchInHz > averge) {
+                                        game.fly(3);
+                                    } else {
+                                        game.fly(-3);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                });
+            }
+        };
+        pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
+        dispatcher.addAudioProcessor(pitchProcessor);
+        Thread audioThread = new Thread(dispatcher, "Audio Thread");
+        audioThread.start();
+
+    }
+
+
     private void killActivity() {
-        //Log.d("?????","finish");
-        this.finish();
+
+        Log.d("?????","finish");
+        //////
+        if (dispatcher!=null) {
+            dispatcher.removeAudioProcessor(pitchProcessor);
+            dispatcher.stop();
+            dispatcher=null;
+            pitchProcessor=null;
+            pdh=null;
+        }
+
+        Intent intent=new Intent();
+        intent.putExtra("score",new Integer(game.score).toString());
+        Log.d("inscore",new Integer(game.score).toString());
+        setResult(1,intent);
+        finish();//finishing activity
         overridePendingTransition(0, 0);
     }
 

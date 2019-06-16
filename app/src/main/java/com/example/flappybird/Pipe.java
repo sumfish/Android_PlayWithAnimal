@@ -9,7 +9,7 @@ public class Pipe {
     public int posX,posY;
 
     private int screenHeight;
-    private int  velocityX = 10;
+    private int  velocityX = 15;
     private int gap = 600;
 
     public Pipe(Bitmap b1,Bitmap b2, int x, int y){

@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:screenOrientation="landscape" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pitchLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/background">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_title"
+        android:layout_margin="50dp"/>
+
+    <Button
+        android:id="@+id/setPitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="setPitch"
+        android:text="@string/setpitch"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="startGame"
+        android:text="@string/start"
+        android:textAllCaps="false" />
 
 
 
+</LinearLayout>
 
-    <LinearLayout
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_centerInParent="true">
-
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:enabled="false"
-            android:onClick="startGame"
-            android:text="@string/start" />
-    </LinearLayout>
-
-</RelativeLayout>

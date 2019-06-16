@@ -40,9 +40,9 @@ import java.util.Random;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
-    private Bird mBird;
+    public Bird mBird;
     private SurfaceHolder mSurfaceHolder;
-    private Canvas mCanvas;
+    public Canvas mCanvas;
     private Bitmap background;
     private ArrayList<Bitmap> birdArray;
     public static boolean mIsDrawing;
@@ -58,9 +58,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     private int counterG;
     private int counterF;
     private boolean isStrong = false;
-    private boolean[] scoreArr;
-    private int score = 0;
-    private int randomEmoji;
+    private boolean[] scoreArr ;
+    public int score = 0;
+    public int randomEmoji;
     private boolean isEmojing = false;
     private boolean bindToPipe = false;
     private boolean ignorePipe = false;
@@ -70,6 +70,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     private List<Emoji> emojis;
     private Bitmap smile;
     private Bitmap sad;
+    public double v_level;
 
     private ImageView mBackgroundImg;
     private FaceDetectionProcessor faceDetection;
@@ -143,7 +144,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     }
 
 
-    private void drawSomething() {
+    public void drawSomething() {
 
         try {
 
@@ -197,7 +198,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         while (mIsDrawing) {
             mCanvas = null;
             long start = System.currentTimeMillis();
-
+            Log.d("jump",new Integer(mBird.posY).toString());
             drawSomething();
             if (isEmojing == false)
                 randomEmoji--;
@@ -206,13 +207,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
             long end = System.currentTimeMillis();
 
-            if (end - start < 30) {
+            /*if (end - start < 30) {
                 try {
                     Thread.sleep(30 - (end - start));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
 
 
         }
@@ -220,16 +221,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     }
 
-    public void fly() {
-        isFlying = true;
-        counterG = 0;
-        counterF = 0;
-
+    public void fly(double level){
+       isFlying = true;
+       counterG = 0;
+       counterF = 0;
+       v_level=level;
     }
 
     public void flyAnimate() {
 
-        mBird.fly(counterG);
+        mBird.fly(counterG,v_level);
 
         counterG++;
 
@@ -253,18 +254,18 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         //isEmojing = true;
         bindToPipe = true;
         randomEmoji = 200000;
-        Random r = new Random();
-        face = r.nextInt(1) % 2;
+//        Random r = new Random();
+//        face = r.nextInt(1);
     }
 
     public void setEmojiList() {
         emojis = new ArrayList<>();
+        Random r = new Random();
         for (int i = 0; i < 5; i++) {
-            Random r = new Random();
-            if (r.nextInt(1) % 2 == 1)
-                emojis.add(new Emoji(smile, 500 + 500 * i, screenHeight / 2 + r.nextInt(400) - 200, 1));
+            if (r.nextInt(2) == 1)
+                emojis.add(new Emoji(smile, 500 + 1000 * i, screenHeight / 2 + r.nextInt(300) - 150, 1));
             else
-                emojis.add(new Emoji(sad, 500 + 500 * i, screenHeight / 2 + r.nextInt(400) - 200, 0));
+                emojis.add(new Emoji(sad, 500 + 1000 * i, screenHeight / 2 + r.nextInt(300) - 150, 0));
         }
         isEmojing = true;
     }
@@ -376,7 +377,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
                         Log.i("Game", "smilingProbability: " + smilingProbability);
                         if (smilingProbability > 0.00001d &&
                                 ((emojis.get(i).face == 1 && smilingProbability > 0.8f) ||
-                                (emojis.get(i).face == 0 && smilingProbability < 0.005f))) {
+                                (emojis.get(i).face == 0 && smilingProbability < 0.02f))) {
                             score += 3;
                             if(birdSize > 80) {
                                 birdSize -= 10;
@@ -476,7 +477,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     public void surfaceCreated(SurfaceHolder holder) {
         mIsDrawing = true;
 
-        new Thread(this).start();
+        //new Thread(this).start();
 
     }
 

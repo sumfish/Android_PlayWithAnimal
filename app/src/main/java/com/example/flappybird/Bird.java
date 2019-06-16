@@ -17,8 +17,9 @@ public class Bird {
     public int posX,posY;
     private Bitmap image;
     private ArrayList<Bitmap>  bitmapArray;
-    public int velocityY = 10;
+    public int velocityY = 5;
     public  double G = 0.3;
+    public double recentV;
 
     private int pic;
 
@@ -30,6 +31,7 @@ public class Bird {
         posY = 100;
         bitmapArray = birdArray;
         pic = 0;
+        recentV=0;
 
         image = bitmapArray.get(pic);
 
@@ -58,10 +60,16 @@ public class Bird {
 
     public void fall(int conterF){
 
-        posY += conterF * G;
+        if(recentV<0) {
+            posY += Math.round(-(recentV) + conterF * G);
+        }else{
+            posY += conterF * G;
+        }
     }
-    public void fly(int conterG){
-        posY -= Math.round(velocityY  - conterG * G);
+
+    public void fly(int conterG,double level){
+        posY -= Math.round(velocityY*level  - conterG * G);
+        recentV=velocityY*level;
     }
 
     public Bitmap getResizedBitmap(Bitmap b, int newWidth, int newHeight) {

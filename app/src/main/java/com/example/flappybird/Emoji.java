@@ -9,7 +9,7 @@ public class Emoji {
     private Bitmap img;
     public int posX,posY;
     private int screenHeight;
-    private int velocityX = 10;
+    private int velocityX = 15;
     public int face = 0; //1 = smile
     public boolean disappear = false;
 
