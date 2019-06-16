@@ -3,9 +3,9 @@
     package="com.example.flappybird">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="landscape"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
         <activity android:name=".GameActivity"></activity>
+        <activity android:name=".TestPitchThreshold"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FlappyBird</string>
     <string name="start">START</string>
+    <string name="setpitch">SetPitch</string>
 </resources>

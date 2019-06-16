@@ -36,9 +36,9 @@ import java.util.Random;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable {
 
-    private Bird mBird;
+    public Bird mBird;
     private SurfaceHolder mSurfaceHolder;
-    private Canvas mCanvas;
+    public Canvas mCanvas;
     private Bitmap background;
     private ArrayList<Bitmap> birdArray;
     public static boolean mIsDrawing;
@@ -55,14 +55,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     private int counterF;
     private boolean isStrong = false;
     private boolean[] scoreArr ;
-    private int score = 0;
-    private int randomEmoji;
+    public int score = 0;
+    public int randomEmoji;
     private boolean isEmojing = false;
     private boolean bindToPipe = false;
     private boolean ignorePipe = false;
     private Emoji mEmoji;
     private int emojiSize = 150;
     private int face = 0;
+    public double v_level;
 
     private ImageView mBackgroundImg;
 
@@ -136,7 +137,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     }
 
 
-    private void drawSomething() {
+    public void drawSomething() {
 
         try {
 
@@ -186,7 +187,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
         while (mIsDrawing){
             mCanvas = null;
             long start = System.currentTimeMillis();
-
+            Log.d("jump",new Integer(mBird.posY).toString());
             drawSomething();
             randomEmoji--;
             if(randomEmoji <= 0)
@@ -194,13 +195,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
             long end = System.currentTimeMillis();
 
-            if (end - start < 30) {
+            /*if (end - start < 30) {
                 try {
                     Thread.sleep(30 - (end - start));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
 
 
         }
@@ -208,16 +209,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
 
     }
 
-    public void fly(){
+    public void fly(double level){
        isFlying = true;
        counterG = 0;
        counterF = 0;
-
+       v_level=level;
     }
 
     public void  flyAnimate(){
 
-        mBird.fly(counterG);
+        mBird.fly(counterG,v_level);
 
         counterG++;
 
@@ -405,7 +406,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback,Runnable
     public void surfaceCreated(SurfaceHolder holder) {
         mIsDrawing = true;
 
-        new Thread(this).start();
+        //new Thread(this).start();
 
     }
 
