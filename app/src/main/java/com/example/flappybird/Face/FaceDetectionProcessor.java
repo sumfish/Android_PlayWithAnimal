@@ -37,7 +37,7 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
 
     private final FirebaseVisionFaceDetector detector;
 
-    private double smilingProbability = 0.0;
+    private double smilingProbability = 0;
 
     public FaceDetectionProcessor() {
         FirebaseVisionFaceDetectorOptions options =
@@ -90,6 +90,7 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
 
     @Override
     protected void onFailure(@NonNull Exception e) {
-        Log.e(TAG, "Face detection failed " + e);
+        smilingProbability = 0;
+        Log.i(TAG, "Face detection failed " + e);
     }
 }

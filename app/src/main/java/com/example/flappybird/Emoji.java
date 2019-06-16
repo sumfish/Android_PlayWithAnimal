@@ -6,26 +6,27 @@ import android.graphics.Canvas;
 
 public class Emoji {
 
-    private Bitmap smile,sad;
+    private Bitmap img;
     public int posX,posY;
     private int screenHeight;
     private int velocityX = 10;
+    public int face = 0; //1 = smile
+    public boolean disappear = false;
 
-    public Emoji(Bitmap b1, Bitmap b2,int x, int y){
+    public Emoji(Bitmap b1,int x, int y,int f){
 
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        smile = b1;
-        sad = b2;
+        img = b1;
+        face = f;
         posX = x;
         posY = y;
 
     }
 
-    public void draw(Canvas canvas,int i) {
-        if(i == 0)
-            canvas.drawBitmap(smile, posX, posY, null);
-        else
-            canvas.drawBitmap(sad, posX, posY, null);
+    public void draw(Canvas canvas) {
+
+        canvas.drawBitmap(img, posX, posY, null);
+
     }
 
     public void move(){

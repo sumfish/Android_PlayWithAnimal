@@ -51,7 +51,7 @@ public class GameActivity extends Activity {
         createCameraSource();
         startCameraSource();
 
-        game = new Game(this, backgroundImage);
+        game = new Game(this, backgroundImage, faceDetectionProcessor);
 
         FrameLayout frm = findViewById(R.id.frameLayout);
         frm.addView(game);
