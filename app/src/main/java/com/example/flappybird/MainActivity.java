@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.Manifest;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -25,6 +28,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.support.v7.widget.AppCompatImageView;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -47,6 +51,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
         mStartButton = findViewById(R.id.button);
+        //ImageView title=findViewById(R.id.title);
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_title);
+        //title.setImageBitmap(bitmap);
 
         if (allPermissionsGranted())
             mStartButton.setEnabled(true);
@@ -56,8 +63,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         ok.setTypeface(Typeface.createFromAsset(getAssets(),"font/sansitaone-webfont.ttf"));
         b= findViewById(R.id.button);
         b.setVisibility(View.INVISIBLE);
-        LinearLayout l=findViewById(R.id.pitchLayout);
-        l.setBackgroundResource(R.drawable.background);
+        //LinearLayout l=findViewById(R.id.pitchLayout);
+        //l.setBackgroundResource(R.drawable.background);
 
     }
 
