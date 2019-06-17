@@ -2,7 +2,7 @@
 Flappy Bird with Voice and Smile
 
 ## Download
-[app-debug.apk](https://github.com/sumfish/Android_PlayWithAnimal/blob/master/app-debug.apk)
+[app-debug.apk](./app-debug.apk)
 
 ## Libraries
 - [TarsosDSP](https://github.com/JorenSix/TarsosDSP)
@@ -12,13 +12,16 @@ Flappy Bird with Voice and Smile
 
 ## Screenshots
 - flap by pitch of voice
+<img src="./screenshots/1.jpg" alt="flap by pitch of voice" width="400"/>
 
 - use smile or crying
+<img src="./screenshots/2.jpg" alt="use smile or crying" width="400"/>
+
 
 ## Contributors
-- annie31123
+- [annie31123](https://github.com/annie31123)
   - write the basic flappy bird game (use the surfaceview to draw the game animation)
-- sumfish
+- [sumfish](https://github.com/sumfish)
   - use TarsosDSP for pitch detection
-- winonecheng
+- [winonecheng](https://github.com/winonecheng)
   - use ML Kit to recognize facial expressions (smiling)
