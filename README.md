@@ -17,7 +17,7 @@ Flappy Bird with Voice and Smile
 
 ## Contributors
 - annie31123
-  - .
+  - write the basic flappy bird game (use the surfaceview to draw the game animation)
 - sumfish
   - .
 - winonecheng
