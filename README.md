@@ -19,6 +19,6 @@ Flappy Bird with Voice and Smile
 - annie31123
   - write the basic flappy bird game (use the surfaceview to draw the game animation)
 - sumfish
-  - .
+  - use TarsosDSP for pitch detection
 - winonecheng
   - use ML Kit to recognize facial expressions (smiling)
