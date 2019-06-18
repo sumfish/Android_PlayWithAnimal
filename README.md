@@ -17,6 +17,9 @@ Flappy Bird with Voice and Smile
 - use smile or crying
 <img src="./screenshots/2.jpg" alt="use smile or crying" width="400"/>
 
+## Demo 
+- [Video](https://youtu.be/HcYMKDWV4Wo)
+- [Slide](https://ppt.cc/fHwlnx)
 
 ## Contributors
 - [annie31123](https://github.com/annie31123)
